@@ -1,0 +1,421 @@
+---
+title: "Final Logo"
+output: html_document
+date: "2025-04-04"
+---
+
+Global environment with vectors for plot history
+```{r}
+
+  turtle_state <- new.env()
+  turtle_state$x <- 0
+  turtle_state$y <- 0
+  turtle_state$heading <- 0
+  turtle_state$is_visible <- 1
+  turtle_state$plot_turtle <- 1
+  
+  #vectors wtih maximum expectet length
+  turtle_state$path_x <- numeric(10000)
+  turtle_state$path_y <- numeric(10000)
+  
+   # Initialize first point
+  turtle_state$path_x[1] <- 0
+  turtle_state$path_y[1] <- 0
+  
+  # Keep track of the current length of the path
+  turtle_state$path_length <- 1
+
+
+```
+
+
+Internal function to update the history and global environment
+
+```{r}
+update_path <- function(new_x, new_y) {
+  # Get the next index position
+  next_pos <- turtle_state$path_length + 1
+
+ # Add the new point
+  turtle_state$path_x[next_pos] <- new_x
+  turtle_state$path_y[next_pos] <- new_y
+
+ # Update the path length
+  turtle_state$path_length <- next_pos
+}
+```
+
+Plot turtle for the vectorized paths:
+```{r}
+Plotting_Turtle <- function() {
+  # Set up the plot
+  par(pty = "s")
+  plot(0, 0, xlim=c(-100, 100), ylim=c(-100, 100),
+       xlab="X", ylab="Y", main="Turtle Graphics", 
+       type="n")
+  
+  current_length <- turtle_state$path_length
+  if (current_length > 1) {
+    lines(
+      turtle_state$path_x[1:current_length], 
+      turtle_state$path_y[1:current_length], 
+      col="black"
+    )
+  }
+  
+  # Draw the turtle if visible
+  if(turtle_state$is_visible == 1) {
+    points(turtle_state$x, turtle_state$y, pch=16, col="darkgreen", cex=1.5)
+    
+    # Show heading with an arrow
+    arrow_length <- 8
+    rad <- turtle_state$heading * pi / 180
+    arrow_x <- turtle_state$x + arrow_length * cos(rad)
+    arrow_y <- turtle_state$y + arrow_length * sin(rad)
+    arrows(turtle_state$x, turtle_state$y, arrow_x, arrow_y, 
+           length=0.1, col= "#DAA520", lwd=2)
+  }
+}
+
+Plotting_Turtle()
+```
+
+Function, so I can change if I want to plot or not (so in loops it doesn't plot for every step)
+```{r}
+change_turtle_plot <- function(turtle_state, plot = TRUE) {
+  # Wenn plot = TRUE, setze plot_turtle auf 1, =FALSE auf 0
+  turtle_state$plot_turtle <- if(plot) 1 else 0
+}
+
+change_turtle_plot(turtle_state, plot = TRUE)
+
+```
+
+
+Now creating the CLEARSCREEN Funtion: Clears the screen
+
+```{r}
+CS <- function() {
+  # Reset turtle to home position
+  turtle_state$x <- 0
+  turtle_state$y <- 0
+  turtle_state$heading <- 0
+  
+  # Initialize first point
+  turtle_state$path_x[1] <- 0
+  turtle_state$path_y[1] <- 0
+  
+  # Keep track of the current length of the path
+  turtle_state$path_length <- 1
+  
+  # Clear the current plot
+ if(turtle_state$plot_turtle == 1) {
+  # Redraw the entire plot
+  Plotting_Turtle()
+  }
+}
+
+CS()
+
+```
+
+HIDETURTULE Function, when I want to hide the turtle:
+```{r}
+HT <- function(turtle_state) {
+  turtle_state$is_visible <- 0
+  
+  if(turtle_state$plot_turtle == 1) {
+  # Redraw the entire plot
+  Plotting_Turtle()
+  }
+}
+
+HT(turtle_state)
+```
+
+SHOWTURTULE Function, when I wnat to show the turtle:
+```{r}
+ST <- function(turtle_state) {
+  turtle_state$is_visible <- 1
+  
+  if(turtle_state$plot_turtle == 1) {
+  # Redraw the entire plot
+  Plotting_Turtle()
+  }
+}
+
+ST(turtle_state)
+```
+
+
+Forward Function
+```{r}
+
+FD <- function(steps, drawplot = TRUE) {
+  
+  # Heading: Convert degrees to radians
+  rad <- turtle_state$heading * pi / 180
+  
+  # Calculate new coordinates
+  new_x <- turtle_state$x + steps * cos(rad)
+  new_y <- turtle_state$y + steps * sin(rad)
+  
+  #add the new point to the path
+  update_path(new_x, new_y)
+  
+  # Update turtle position
+  turtle_state$x <- new_x
+  turtle_state$y <- new_y
+  
+  if(turtle_state$plot_turtle == 1) {
+  # Redraw the entire plot
+  Plotting_Turtle()
+  }
+}
+
+
+FD(50)
+
+```
+
+
+BACK, to go back X steps
+```{r}
+BK <- function(steps) {
+  FD(-steps)
+}
+
+BK(100)
+
+```
+
+
+Function LEFT, to turn this many degrees
+```{r}
+LT <- function(degrees) {
+  turtle_state$heading <- (turtle_state$heading + degrees) %% 360
+  
+   if(turtle_state$plot_turtle == 1) {
+  # Redraw the entire plot
+  Plotting_Turtle()
+  }
+}
+
+LT(90)
+
+```
+
+
+Function RIGHT, to turn this many degrees
+```{r}
+RT <- function(degrees) {
+  turtle_state$heading <- (turtle_state$heading - degrees) %% 360
+  
+   if(turtle_state$plot_turtle == 1) {
+  # Redraw the entire plot
+  Plotting_Turtle()
+  }
+}
+
+RT(90)
+```
+
+
+Function SETHEADING, to turn an absolute value of degrees
+```{r}
+SETH <- function(degrees) {
+  
+  turtle_state$heading <- degrees %% 360
+  
+   if(turtle_state$plot_turtle == 1) {
+  # Redraw the entire plot
+  Plotting_Turtle()
+  }
+}
+
+SETH(90)
+```
+
+SETPOS, to set the X and Y coordinates
+```{r}
+
+SETPOS <- function(new_x, new_y) {
+  # Set absolute position
+  # Get the next index position
+  next_pos <- turtle_state$path_length + 1
+
+ # Add the new point
+  turtle_state$path_x[next_pos] <- new_x
+  turtle_state$path_y[next_pos] <- new_y
+
+ # Update the path length
+  turtle_state$path_length <- next_pos
+  
+   #add the new point to the path
+  update_path(new_x, new_y)
+  
+  # Update turtle position
+  turtle_state$x <- new_x
+  turtle_state$y <- new_y
+  
+   if(turtle_state$plot_turtle == 1) {
+  # Redraw the entire plot
+  Plotting_Turtle()
+  }
+}
+
+SETPOS(50,50)
+
+```
+
+HOME function, to move back to 0,0
+```{r}
+
+HOME<- function() {
+  # Set absolute position
+  # Get the next index position
+  next_pos <- turtle_state$path_length + 1
+
+ # Add the new point
+  turtle_state$path_x[next_pos] <- 0
+  turtle_state$path_y[next_pos] <- 0
+
+ # Update the path length
+  turtle_state$path_length <- next_pos
+  
+   #add the new point to the path
+  update_path(0, 0)
+  
+  # Update turtle position
+  turtle_state$x <- 0
+  turtle_state$y <- 0
+  
+   if(turtle_state$plot_turtle == 1) {
+  # Redraw the entire plot
+  Plotting_Turtle()
+  }
+}
+HOME()
+
+```
+
+
+
+SETX, set the horizontal posiiton to X
+```{r}
+SETX <- function(new_x) {
+  
+   current_y <- turtle_state$y
+   
+  # Get the next index position
+  next_pos <- turtle_state$path_length + 1
+
+ # Add the new point
+  turtle_state$path_x[next_pos] <- new_x
+  turtle_state$path_y[next_pos] <- current_y
+
+ # Update the path length
+  turtle_state$path_length <- next_pos
+  
+   #add the new point to the path
+  update_path(new_x, current_y)
+  
+  # Update turtle position
+  turtle_state$x <- new_x
+  turtle_state$y <- current_y
+  
+  
+   if(turtle_state$plot_turtle == 1) {
+  # Redraw the entire plot
+  Plotting_Turtle()
+  }
+}
+
+SETX(100)
+
+```
+
+
+SETY, set the vertical position to Y
+```{r}
+SETY <- function(new_y) {
+  
+   current_x <- turtle_state$x
+   
+  # Get the next index position
+  next_pos <- turtle_state$path_length + 1
+
+ # Add the new point
+  turtle_state$path_x[next_pos] <- current_x
+  turtle_state$path_y[next_pos] <- new_y
+
+ # Update the path length
+  turtle_state$path_length <- next_pos
+  
+   #add the new point to the path
+  update_path(current_x, new_y)
+  
+  # Update turtle position
+  turtle_state$x <- current_x
+  turtle_state$y <- new_y
+  
+  
+   if(turtle_state$plot_turtle == 1) {
+  # Redraw the entire plot
+  Plotting_Turtle()
+  }
+}
+
+SETY(100)
+
+```
+
+
+test - draw a square:
+```{r}
+square <- function() {
+  
+  CS()
+  FD(50)
+  RT(90)
+  FD(50)
+  RT(90)
+  FD(50)
+  RT(90)
+  FD(50)
+}
+
+square()
+
+```
+
+draw the sphere pattern
+```{r}
+
+HT(turtle_state) #hide the turtle
+
+change_turtle_plot(turtle_state, plot = FALSE )
+
+draw_sphere <- function() {
+  # Clear the screen
+  CS()
+  
+  # Recreate the pattern
+  for (i in 1:20) {
+    for (j in 1:180) {
+      FD(1)  
+      RT(2)  
+    }
+    RT(18)    # After inner loop, turn right 18 degrees
+  }
+  
+ Plotting_Turtle() 
+}
+
+draw_sphere()
+
+
+
+```
+
+
