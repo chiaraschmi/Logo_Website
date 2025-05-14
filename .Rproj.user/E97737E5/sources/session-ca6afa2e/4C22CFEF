@@ -3,24 +3,24 @@
     "path": "~/Desktop/R-Studio/Logo in R/Logo_Github.Rmd",
     "project_path": null,
     "type": "r_markdown",
-    "hash": "0",
+    "hash": "2179045054",
     "contents": "",
-    "dirty": false,
+    "dirty": true,
     "created": 1747224646939.0,
     "source_on_save": false,
     "relative_order": 2,
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "11,21",
-        "scrollLine": "26"
+        "cursorPosition": "93,0",
+        "scrollLine": "81"
     },
     "folds": "",
     "lastKnownWriteTime": 1747224412,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1747224412,
+    "last_content_update": 1747225591014,
     "read_only": false,
     "read_only_alternatives": []
 }

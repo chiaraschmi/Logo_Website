@@ -30,7 +30,6 @@ Global environment with vectors for plot history
 
 
 Internal function to update the history and global environment
-
 ```{r}
 update_path <- function(new_x, new_y) {
   # Get the next index position
@@ -92,7 +91,7 @@ change_turtle_plot(turtle_state, plot = TRUE)
 ```
 
 
-Now creating the CLEARSCREEN Funtion: Clears the screen
+CLEARSCREEN Funtion: Clears the screen
 
 ```{r}
 CS <- function() {
